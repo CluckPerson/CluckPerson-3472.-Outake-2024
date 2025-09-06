@@ -23,11 +23,11 @@ public class REVOut {
     We should use ForgPlus
      */
     
-     SparkMax CANWrist = new SparkMax(OutConstants.Wrist_ID, MotorType.kBrushless);
+    SparkMax CANWrist = new SparkMax(OutConstants.Wrist_ID, MotorType.kBrushless);
     SparkAbsoluteEncoder WristEnc = CANWrist.getAbsoluteEncoder();
     //RelativeEncoder JMDeity = CANWrist.getEncoder(); //Not the type we want
     SparkMaxConfig WristConfig = new SparkMaxConfig();
-} //idk why this is wrong
+ //idk why this is wrong
 
 private void Burnflash(){
         CANWrist.setCANTimeout(250);
@@ -54,10 +54,12 @@ private double getWrist(){ //Request Position
 }
 private double requestSetpoint(){//Request Setpoint
     //return we need the ClosedLoopRequest
+    //https://imcab.github.io/ForgeDocumentation/page9
 }
 private boolean atGoal(){
     return Math.abs(getWrist() - requestSetpoint()) <= OutConstants.WristTolerance; //How much tolerance we want
 }
 private void stopWrist(){
     CANWrist.stopMotor();
+}
 }
