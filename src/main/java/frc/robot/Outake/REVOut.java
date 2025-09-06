@@ -8,33 +8,56 @@ import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import frc.robot.Outake.OutConstants;
+import frc.robot.Outake.Wheels;
 
 import edu.wpi.first.wpilibj.AnalogEncoder;
 import edu.wpi.first.wpilibj.Encoder;
 
 public class REVOut {
-          /*      TODO:
-    Set/Request Position
-    Set/Request Setpoint
-    Boolean atGoal
-    Stop
-
+          /*      
     What is? From BulukLib
     private ClosedLoopControl pid;
     private ClosedLoopRequest request;
-     */
-    public SparkMax uh = new SparkMax(1, MotorType.kBrushless);
 
-    SparkAbsoluteEncoder ChongDeity = uh.getAbsoluteEncoder();
-    //RelativeEncoder JMDeity = uh.getEncoder(); //Not the type we want
+    We should use ForgPlus
+     */
+    
+     SparkMax CANWrist = new SparkMax(OutConstants.Wrist_ID, MotorType.kBrushless);
+    SparkAbsoluteEncoder WristEnc = CANWrist.getAbsoluteEncoder();
+    //RelativeEncoder JMDeity = CANWrist.getEncoder(); //Not the type we want
     SparkMaxConfig WristConfig = new SparkMaxConfig();
-}
-    private void Burnflash(){
-        uh.setCANTimeout(250);
+} //idk why this is wrong
+
+private void Burnflash(){
+        CANWrist.setCANTimeout(250);
          WristConfig.
             inverted(false).
             idleMode(IdleMode.kBrake).
             smartCurrentLimit(25);//limit in Amps
-        uh.configure(WristConfig, com.revrobotics.spark.SparkBase.ResetMode.kResetSafeParameters, PersistMode.kPersistParameters); //couldn't import for some reason
-        
+            //positionConversionFactor is worth looking into
+        CANWrist.configure(WristConfig, com.revrobotics.spark.SparkBase.ResetMode.kResetSafeParameters, PersistMode.kPersistParameters); //couldn't import for some reason
     }
+/*Methods go here:
+TODO:
+    Set/Request Position
+    Setpoint
+    Boolean atGoal
+    Stop
+zeroOffset is worth looking into
+*/
+private void setPosition(){
+    //CANWrist.set      we need the ClosedLoopControl (PID)
+}
+private double getWrist(){ //Request Position
+    return WristEnc.getPosition() * 360;
+}
+private double requestSetpoint(){//Request Setpoint
+    //return we need the ClosedLoopRequest
+}
+private boolean atGoal(){
+    return Math.abs(getWrist() - requestSetpoint()) <= OutConstants.WristTolerance; //How much tolerance we want
+}
+private void stopWrist(){
+    CANWrist.stopMotor();
+}
