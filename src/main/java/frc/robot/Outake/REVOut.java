@@ -10,28 +10,33 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import frc.robot.Outake.OutConstants;
 import frc.robot.Outake.Wheels;
-
+import lib.Forge.REV.SparkMax.ForgeSparkMax;
 import edu.wpi.first.wpilibj.AnalogEncoder;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class REVOut {
-          /*      
+public class REVOut extends SubsystemBase{
+    private ForgeSparkMax CANWrist;   
+    private SparkAbsoluteEncoder WristEnc;
+    private SparkMaxConfig WristConfig;
+    
+//  private RelativeEncoder WristEnc;
+        
+    /*      
     What is? From BulukLib
-    private ClosedLoopControl pid;
-    private ClosedLoopRequest request;
+
 
     We should use ForgPlus
      */
-    
-    SparkMax CANWrist = new SparkMax(OutConstants.Wrist_ID, MotorType.kBrushless);
-    SparkAbsoluteEncoder WristEnc = CANWrist.getAbsoluteEncoder();
-    //RelativeEncoder JMDeity = CANWrist.getEncoder(); //Not the type we want
-    SparkMaxConfig WristConfig = new SparkMaxConfig();
- //idk why this is wrong
 
+public REVOut(){
+        ForgeSparkMax CANWrist = new ForgeSparkMax(OutConstants.Wrist_ID);
+        SparkAbsoluteEncoder WristEnc = CANWrist.getAbsoluteEncoder();
+        //RelativeEncoder WristEnc = CANWrist.getEncoder(); //Not the type we want
+    }
 private void Burnflash(){
         CANWrist.setCANTimeout(250);
-         WristConfig.
+         CANWrist.flashConfiguration(false, IdleMode.kBrake, 25, false);// True for 12V voltage Compensation
             inverted(false).
             idleMode(IdleMode.kBrake).
             smartCurrentLimit(25);//limit in Amps
@@ -57,7 +62,8 @@ private double requestSetpoint(){//Request Setpoint
     //https://imcab.github.io/ForgeDocumentation/page9
 }
 private boolean atGoal(){
-    return Math.abs(getWrist() - requestSetpoint()) <= OutConstants.WristTolerance; //How much tolerance we want
+    return Math.abs(getWrist() - requestSetpoint()) <= OutConstants.WristTolerance; //
+    How much tolerance we want
 }
 private void stopWrist(){
     CANWrist.stopMotor();

@@ -9,7 +9,7 @@ public class Wheels {
     */    
     static SparkMax Wheel1 = new SparkMax(OutConstants.Wheel1_ID, MotorType.kBrushless);
     static SparkMax Wheel2 = new SparkMax(OutConstants.Wheel2_ID, MotorType.kBrushless);
-    
+    static boolean BranchTest;  
 
 
 
