@@ -42,6 +42,16 @@ public class OutConstants {
     
     final static double WristAmp = 25; //Amp Limit for wrist. Idk the actual vale
     final static double WheelsAmp = 25; //Amp Limit for wrist
+
+    // PID pal wrist 
+    public static final double Wrist_kP = 0.1;
+    public static final double Wrist_kI = 0.0;
+    public static final double Wrist_kD = 0.0;
+    public static final double Wrist_kFF = 0.0;
+    public static final double Wrist_IZone = 0.0;
+    public static final double Wrist_MaxOutput = 1.0;
+    public static final double Wrist_MinOutput = -1.0;
+
     public OutConstants(){
     /*set motor id's
     Gains (for the PID's)
