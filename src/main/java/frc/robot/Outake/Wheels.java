@@ -27,11 +27,12 @@ public class Wheels extends SubsystemBase {
     */    
     static SparkMax Wheel1 = new SparkMax(OutConstants.Wheel1_ID, MotorType.kBrushless);
     static SparkMax Wheel2 = new SparkMax(OutConstants.Wheel2_ID, MotorType.kBrushless);
+
     private TalonFX wheelMotor1;
-    private TalonFXConfiguration wheelMotor1Config;
+    private TalonFXConfiguration wheelMotor1Config;//TODO CONFIG
 
  public Wheels() {
-   wheelMotor1 = new TalonFX(1,"rio");
+   wheelMotor1 = new TalonFX(1);//TODO CHANGE
  
 // final TalonFXSimState m_talonFXSim = wheelMotor1.getSimState();
 
