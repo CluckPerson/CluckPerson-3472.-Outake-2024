@@ -13,12 +13,13 @@ import lib.Forge.Math.Controllers.Control;
 import edu.wpi.first.wpilibj.AnalogEncoder;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
+import edu.wpi.first.math.controller.PIDController;
 
 public class REVOut extends SubsystemBase{
     private ForgeSparkMax CANWrist;   
     private SparkAbsoluteEncoder WristEnc;
     private SparkMaxConfig WristConfig;
+    private PIDController wristPID;
     
 //  private RelativeEncoder WristEnc;
         
@@ -30,11 +31,13 @@ public class REVOut extends SubsystemBase{
      */
 
 public REVOut(){
-        ForgeSparkMax CANWrist = new ForgeSparkMax(OutConstants.CANWrist_ID);
-        SparkAbsoluteEncoder WristEnc = CANWrist.getAbsoluteEncoder();
-        //RelativeEncoder WristEnc = CANWrist.getEncoder(); //Not the type we want
+        CANWrist = new ForgeSparkMax(OutConstants.CANWrist_ID);
+        WristEnc = CANWrist.getAbsoluteEncoder();
+        wristPID = new PIDController(OutConstants.Wrist_kP, OutConstants.Wrist_kI, OutConstants.Wrist_kD);
+        wristPID.setTolerance(OutConstants.WristTolerance);
         Burnflash();
     }
+
 private void Burnflash(){
         CANWrist.setCANTimeout(250);
         CANWrist.flashConfiguration(false, IdleMode.kBrake, 25, false);// True for 12V voltage Compensation
@@ -49,20 +52,21 @@ TODO:
     Stop
 zeroOffset is worth looking into
 */
-private void setPosition(){
-    //CANWrist.set      we need the ClosedLoopControl (PID)
+private void setPosition(double targetPosition) {
+    double currentPosition = WristEnc.getPosition() * 360;
+    double output = wristPID.calculate(currentPosition, targetPosition);
+    output = Math.max(OutConstants.Wrist_MinOutput, Math.min(OutConstants.Wrist_MaxOutput, output));
+    CANWrist.set(output);
 }
+
 private double getWrist(){ //Request Position
     return WristEnc.getPosition() * 360;
 }
-private double requestSetpoint(){//Request Setpoint
-    //return we need the ClosedLoopRequest
-    //https://imcab.github.io/ForgeDocumentation/page9
-}
+
 private boolean atGoal(){
-    return Math.abs(getWrist() - requestSetpoint()) <= OutConstants.WristTolerance; 
-    //How much tolerance we want
+    return wristPID.atSetpoint();
 }
+
 private void stopWrist(){
     CANWrist.stopMotor();
 }
