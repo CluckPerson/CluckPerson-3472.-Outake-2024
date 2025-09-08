@@ -30,16 +30,23 @@ import com.ctre.phoenix6.sim.TalonFXSimState;
 
 
 public class KrakenOut extends SubsystemBase {
- /** Creates a new ExampleSubsystem. */
+
 
 
  private TalonFX KrakenWrist;
  private double angPosition = 0.0;
  private static MotionMagicVoltage angControl = new MotionMagicVoltage(0.0);
 
+ private static MotionMagicVoltage motionMagicControl;
+ private TalonFXConfiguration motionMagicConfig;
 
    public KrakenOut() {
-     TalonFX KrakenWrist = new TalonFX(OutConstants.KrakenWrist_ID);
+     KrakenWrist = new TalonFX(OutConstants.KrakenWrist_ID);
+     motionMagicConfig = new TalonFXConfiguration();
+
+     configureMotionMagic();
+     applyMotionMagicConfig();
+
        TalonFXConfiguration KrakenWristConfig = new TalonFXConfiguration();
        final VelocityVoltage m_request = new VelocityVoltage(0).withSlot(0);
 
@@ -54,14 +61,39 @@ public class KrakenOut extends SubsystemBase {
       KrakenWrist.getConfigurator().apply(slot0);
       KrakenWrist.setControl(m_request.withVelocity(8).withFeedForward(0.5));
    }
-  /*
-   public void setDriveVelocity(double velocity){
-    this.ffVolts = driveFFGains.kS() * Math.signum(velocity) + driveFFGains.kV() * velocity;
-    drivePID.setSetpoint(velocity);
-    
-}*/
 
- public void useAngMotor() {
+   private void configureMotionMagic() {
+   //Maldito perfil trapexoidal, por eso CEM esta en decadencia -Chong
+       motionMagicConfig.MotionMagic.MotionMagicAcceleration = 5000; 
+       motionMagicConfig.MotionMagic.MotionMagicCruiseVelocity = 10000; 
+       motionMagicConfig.Slot0.kP = 0.5; 
+       motionMagicConfig.Slot0.kI = 0.0; 
+       motionMagicConfig.Slot0.kD = 0.0; 
+       motionMagicConfig.Slot0.kV = 0.2; 
+   }
+
+   private void applyMotionMagicConfig() {
+       KrakenWrist.getConfigurator().apply(motionMagicConfig);
+       motionMagicControl = new MotionMagicVoltage(0.0)
+           .withSlot(0)
+           .withPosition(0.0)
+           .withFeedForward(0.0);
+   }
+
+   public void setMotionMagicPosition(double position) {
+       KrakenWrist.setControl(motionMagicControl.withPosition(position));
+   }
+
+   public double getCurrentPosition() {
+       return KrakenWrist.getPosition().getValueAsDouble();
+   }
+
+   public boolean isAtTarget(double targetPosition, double tolerance) {
+       double currentPosition = getCurrentPosition();
+       return Math.abs(currentPosition - targetPosition) <= tolerance;
+   }
+
+  public void useAngMotor() {
    KrakenWrist.setControl(angControl);
  }
 
