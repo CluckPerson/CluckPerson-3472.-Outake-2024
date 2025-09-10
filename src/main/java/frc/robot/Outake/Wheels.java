@@ -2,6 +2,8 @@ package frc.robot.Outake;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import lib.Forge.REV.SparkMax.ForgeSparkMax;
+
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.hardware.core.CoreTalonFX;
 import com.ctre.phoenix6.CANBus;
@@ -18,24 +20,24 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
-import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 public class Wheels extends SubsystemBase {
     /*      TODO:
       Add JM's code. After this, we can make the constants
     */    
-    static SparkMax Wheel1 = new SparkMax(OutConstants.Wheel1_ID, MotorType.kBrushless);
-    static SparkMax Wheel2 = new SparkMax(OutConstants.Wheel2_ID, MotorType.kBrushless);
-
+    ForgeSparkMax Wheel1;
+    ForgeSparkMax Wheel2;
+    
     private TalonFX wheelMotor1;
     private TalonFXConfiguration wheelMotor1Config;//TODO CONFIG
 
  public Wheels() {
-   wheelMotor1 = new TalonFX(1);//TODO CHANGE
+   ForgeSparkMax Wheel1 = new ForgeSparkMax(OutConstants.Wheel1_ID, MotorType.kBrushless);
+   ForgeSparkMax Wheel2 = new ForgeSparkMax(OutConstants.Wheel2_ID, MotorType.kBrushless);
+   TalonFX wheelMotor1 = new TalonFX(OutConstants.KrakenWheel_ID);
  
-// final TalonFXSimState m_talonFXSim = wheelMotor1.getSimState();
-
+// final TalonFXSimState wheelMotor1_Sim = wheelMotor1.getSimState();
 
  final DutyCycleOut m_talonFXOut = new DutyCycleOut(0);
  final TalonFXConfiguration m_talonFXConfig = new TalonFXConfiguration();
@@ -43,20 +45,21 @@ public class Wheels extends SubsystemBase {
  wheelMotor1.getConfigurator().apply(m_talonFXConfig);
  
  }
+
+
+ 
   public void runWheels(double speed) {
    // Implementation for running wheels
    wheelMotor1.setControl(new VelocityVoltage(speed));
+   Wheel1.set(speed);
+   Wheel2.set(speed);
   }
 
 
   public void stopWheels() {
    // Implementation for stopping wheels
    wheelMotor1.setControl(new NeutralOut());
+   Wheel1.stopMotor();
+   Wheel2.stopMotor();
  }
-
-
-  private void stopOut(){
-    Wheel1.stopMotor();
-    Wheel2.stopMotor();
-  }
 }
