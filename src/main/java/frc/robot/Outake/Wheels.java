@@ -29,20 +29,22 @@ public class Wheels extends SubsystemBase {
     ForgeSparkMax Wheel1;
     ForgeSparkMax Wheel2;
     
-    private TalonFX wheelMotor1;
+    private TalonFX TalonWrist;
     private TalonFXConfiguration wheelMotor1Config;//TODO CONFIG
 
  public Wheels() {
    ForgeSparkMax Wheel1 = new ForgeSparkMax(OutConstants.Wheel1_ID, MotorType.kBrushless);
    ForgeSparkMax Wheel2 = new ForgeSparkMax(OutConstants.Wheel2_ID, MotorType.kBrushless);
-   TalonFX wheelMotor1 = new TalonFX(OutConstants.KrakenWheel_ID);
+   TalonFX TalonWrist = new TalonFX(OutConstants.KrakenWheel_ID);
+
  
-// final TalonFXSimState wheelMotor1_Sim = wheelMotor1.getSimState();
+// final TalonFXSimState wheelMotor1_Sim = TalonWrist.getSimState();
 
  final DutyCycleOut m_talonFXOut = new DutyCycleOut(0);
+ TalonWrist.optimizeBusUtilization()
  final TalonFXConfiguration m_talonFXConfig = new TalonFXConfiguration();
 // final CANcoderConfiguration m_cancoderConfig = new CANcoderConfiguration();
- wheelMotor1.getConfigurator().apply(m_talonFXConfig);
+ TalonWrist.getConfigurator().apply(m_talonFXConfig);
  
  }
 
@@ -50,7 +52,7 @@ public class Wheels extends SubsystemBase {
  
   public void runWheels(double speed) {
    // Implementation for running wheels
-   wheelMotor1.setControl(new VelocityVoltage(speed));
+   TalonWrist.setControl(new VelocityVoltage(speed));
    Wheel1.set(speed);
    Wheel2.set(speed);
   }
@@ -58,7 +60,7 @@ public class Wheels extends SubsystemBase {
 
   public void stopWheels() {
    // Implementation for stopping wheels
-   wheelMotor1.setControl(new NeutralOut());
+   TalonWrist.setControl(new NeutralOut());
    Wheel1.stopMotor();
    Wheel2.stopMotor();
  }

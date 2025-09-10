@@ -44,7 +44,7 @@ public class KrakenOut extends SubsystemBase {
      KrakenWrist = new TalonFX(OutConstants.KrakenWrist_ID);
      motionMagicConfig = new TalonFXConfiguration();
 
-     configureMotionMagic();
+     
      applyMotionMagicConfig();
 
        TalonFXConfiguration KrakenWristConfig = new TalonFXConfiguration();
@@ -54,31 +54,29 @@ public class KrakenOut extends SubsystemBase {
        Slot0Configs slot0 = new Slot0Configs();
        slot0.kS = 0.25; // Add 0.25 V output to overcome static friction
        slot0.kV = 0.12; // A velocity target of 1 rps results in 0.12 V output
-       slot0.kA = 0.01; // An acceleration of 1 rps/s requires 0.01 V output
        slot0.kP = 4.8; // A position error of 2.5 rotations results in 12 V output
+       slot0.kG = 4.8; // A position error of 2.5 rotations results in 12 V output
+       slot0.kA = 0.01; // An acceleration of 1 rps/s requires 0.01 V output
        slot0.kI = 0; // no output for integrated error
        slot0.kD = 0.1; // A velocity error of 1 rps results in 0.1 V output
+       motionMagicConfig.MotionMagic.MotionMagicAcceleration = 5000; 
+       motionMagicConfig.MotionMagic.MotionMagicCruiseVelocity = 10000;
       KrakenWrist.getConfigurator().apply(slot0);
       KrakenWrist.setControl(m_request.withVelocity(8).withFeedForward(0.5));
+     
    }
 
-   private void configureMotionMagic() {
-   //Maldito perfil trapexoidal, por eso CEM esta en decadencia -Chong
-       motionMagicConfig.MotionMagic.MotionMagicAcceleration = 5000; 
-       motionMagicConfig.MotionMagic.MotionMagicCruiseVelocity = 10000; 
-       motionMagicConfig.Slot0.kP = 0.5; 
-       motionMagicConfig.Slot0.kI = 0.0; 
-       motionMagicConfig.Slot0.kD = 0.0; 
-       motionMagicConfig.Slot0.kV = 0.2; 
-   }
+   
 
    private void applyMotionMagicConfig() {
        KrakenWrist.getConfigurator().apply(motionMagicConfig);
        motionMagicControl = new MotionMagicVoltage(0.0)
            .withSlot(0)
            .withPosition(0.0)
-           .withFeedForward(0.0);
+           .withFeedForward(0.0);//no ocupamos ff
    }
+
+   
 
    public void setMotionMagicPosition(double position) {
        KrakenWrist.setControl(motionMagicControl.withPosition(position));

@@ -35,7 +35,8 @@ public class OutConstants {
 
     final static int Wheel1_ID = 1;
     final static int Wheel2_ID = 2;
-
+    
+    final static int KrakenWheel_ID = 1;
 
     final static int CANWrist_ID = 3;
     final static int KrakenWrist_ID = 1;
@@ -47,25 +48,20 @@ public class OutConstants {
     public static final double Wrist_kP = 0.1;
     public static final double Wrist_kI = 0.0;
     public static final double Wrist_kD = 0.0;
-    public static final double Wrist_kFF = 0.0;
     public static final double Wrist_IZone = 0.0;
     public static final double Wrist_MaxOutput = 1.0;
     public static final double Wrist_MinOutput = -1.0;
-
+/*/
     public OutConstants(){
     /*set motor id's
     Gains (for the PID's)
     and positions?
-    */
 
 
-    SimpleFeedForwardGains WristFFS = new SimpleFeedForwardGains(
-        0, 0, 0);
-    CompleteFeedForwardGains WristFFC = new CompleteFeedForwardGains(
-        0, 0, 0, 0);
     VelocityVoltage m_request = new VelocityVoltage(0).withSlot(0);
     TalonFXConfiguration KrakenConfigs = new TalonFXConfiguration();
     TalonFXConfiguration angMotor1Config = new TalonFXConfiguration();
 
 }
+*/
 }
