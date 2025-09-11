@@ -1,30 +1,13 @@
 package frc.robot.Outake;
 
-import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Command; 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.hardware.core.CoreTalonFX;
 
-
-import java.io.ObjectInputFilter.Config;
-
-
-import com.ctre.phoenix6.CANBus;
-import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
-import com.ctre.phoenix6.controls.NeutralOut;
-import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityVoltage;
-import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.Slot0Configs;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.DutyCycleOut;
-import com.ctre.phoenix6.hardware.CANcoder;
-import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.InvertedValue;
-import com.ctre.phoenix6.sim.TalonFXSimState;
 
 
 
@@ -34,32 +17,37 @@ public class KrakenOut extends SubsystemBase {
 
 
  private TalonFX KrakenWrist;
- private double angPosition = 0.0;
- private static MotionMagicVoltage angControl = new MotionMagicVoltage(0.0);
+ private MotionMagicVoltage angControl;
 
- private static MotionMagicVoltage motionMagicControl;
+ private MotionMagicVoltage motionMagicControl;
  private TalonFXConfiguration motionMagicConfig;
 
    public KrakenOut() {
-     KrakenWrist = new TalonFX(OutConstants.KrakenWrist_ID);
+    MotionMagicVoltage angControl = new MotionMagicVoltage(0.0); 
+    KrakenWrist = new TalonFX(OutConstants.KrakenWrist_ID);
      motionMagicConfig = new TalonFXConfiguration();
 
      configureMotionMagic();
      applyMotionMagicConfig();
 
        TalonFXConfiguration KrakenWristConfig = new TalonFXConfiguration();
-       final VelocityVoltage m_request = new VelocityVoltage(0).withSlot(0);
+       VelocityVoltage m_request = new VelocityVoltage(0).withSlot(0);
 
 
        Slot0Configs slot0 = new Slot0Configs();
-       slot0.kS = 0.25; // Add 0.25 V output to overcome static friction
-       slot0.kV = 0.12; // A velocity target of 1 rps results in 0.12 V output
-       slot0.kA = 0.01; // An acceleration of 1 rps/s requires 0.01 V output
+       //Array []?
        slot0.kP = 4.8; // A position error of 2.5 rotations results in 12 V output
-       slot0.kI = 0; // no output for integrated error
-       slot0.kD = 0.1; // A velocity error of 1 rps results in 0.1 V output
+       slot0.kI = 0.0; // no output for integrated error
+       slot0.kD = 0.01; // A velocity error of 1 rps results in 0.1 V output
+       slot0.kS = 0.25; // Add 0.25 V output to overcome static friction
+       slot0.kV = 0; // A velocity target of 1 rps results in 0.12 V output
+       slot0.kA = 0; // An acceleration of 1 rps/s requires 0.01 V output
+       slot0.kG = 0; // A position error of 2.5 rotations results in 12 V output
+       motionMagicConfig.MotionMagic.MotionMagicAcceleration = OutConstants.MMAcceleration; 
+       motionMagicConfig.MotionMagic.MotionMagicCruiseVelocity = OutConstants.MMCruiseVelocity;
       KrakenWrist.getConfigurator().apply(slot0);
-      KrakenWrist.setControl(m_request.withVelocity(8).withFeedForward(0.5));
+      KrakenWrist.setControl(m_request.withVelocity(8));
+     
    }
 
    private void configureMotionMagic() {
@@ -94,7 +82,7 @@ public class KrakenOut extends SubsystemBase {
    }
 
   public void useAngMotor() {
-   KrakenWrist.setControl(angControl);
+   KrakenWrist.setControl(angControl);//
  }
 
 

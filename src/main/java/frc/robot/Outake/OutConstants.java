@@ -44,14 +44,19 @@ public class OutConstants {
     final static double WheelsAmp = 25; //Amp Limit for wrist
 
     // PID pal wrist 
-    public static final double Wrist_kP = 0.1;
-    public static final double Wrist_kI = 0.0;
-    public static final double Wrist_kD = 0.0;
-    public static final double Wrist_kFF = 0.0;
+    public static final double CANWrist_kP = 0.1;
+    public static final double CANWrist_kI = 0.0;
+    public static final double CANWrist_kD = 0.0;
     public static final double Wrist_IZone = 0.0;
-    public static final double Wrist_MaxOutput = 1.0;
-    public static final double Wrist_MinOutput = -1.0;
+    public static final double Wrist_MaxOutput = 0.7;
+    public static final double Wrist_MinOutput = 0.2;
 
+    
+    
+    public static final double MMAcceleration = 5000; //this is the medium point
+    public static final double MMCruiseVelocity = 5000;
+
+    /*/
     public OutConstants(){
     /*set motor id's
     Gains (for the PID's)

@@ -219,7 +219,7 @@ public class ForgeSparkMax extends SparkMax implements Sendable{
      * Gets the current position of the motor
      * @return the current position of the motor
      */
-    public EncoderValue getPosition(){
+    public double getPosition(){
         return ()-> encoder.getPosition();
     }
 

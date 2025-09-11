@@ -1,62 +1,40 @@
 package frc.robot.Outake;
 
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.hardware.core.CoreTalonFX;
-import com.ctre.phoenix6.CANBus;
-import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.NeutralOut;
-import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityVoltage;
-import com.ctre.phoenix6.configs.CANcoderConfiguration;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
+
 import com.ctre.phoenix6.controls.DutyCycleOut;
-import com.ctre.phoenix6.hardware.CANcoder;
-import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.InvertedValue;
-import com.ctre.phoenix6.sim.TalonFXSimState;
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 public class Wheels extends SubsystemBase {
     /*      TODO:
       Add JM's code. After this, we can make the constants
     */    
-    static SparkMax Wheel1 = new SparkMax(OutConstants.Wheel1_ID, MotorType.kBrushless);
-    static SparkMax Wheel2 = new SparkMax(OutConstants.Wheel2_ID, MotorType.kBrushless);
-
-    private TalonFX wheelMotor1;
+    private TalonFX Wheel;
     private TalonFXConfiguration wheelMotor1Config;//TODO CONFIG
 
  public Wheels() {
-   wheelMotor1 = new TalonFX(1);//TODO CHANGE
+      TalonFX Wheel = new TalonFX(OutConstants.KrakenWheel_ID);
+
  
-// final TalonFXSimState m_talonFXSim = wheelMotor1.getSimState();
+// final TalonFXSimState wheelMotor1_Sim = Wheel.getSimState();
 
-
- final DutyCycleOut m_talonFXOut = new DutyCycleOut(0);
+ //final DutyCycleOut m_talonFXOut = new DutyCycleOut(0);
+ Wheel.optimizeBusUtilization();
  final TalonFXConfiguration m_talonFXConfig = new TalonFXConfiguration();
-// final CANcoderConfiguration m_cancoderConfig = new CANcoderConfiguration();
- wheelMotor1.getConfigurator().apply(m_talonFXConfig);
- 
+ Wheel.getConfigurator().apply(m_talonFXConfig);
  }
   public void runWheels(double speed) {
    // Implementation for running wheels
-   wheelMotor1.setControl(new VelocityVoltage(speed));
-  }
+   Wheel.setControl(new VelocityVoltage(speed));
+   }
 
 
   public void stopWheels() {
    // Implementation for stopping wheels
-   wheelMotor1.setControl(new NeutralOut());
- }
-
-
-  private void stopOut(){
-    Wheel1.stopMotor();
-    Wheel2.stopMotor();
-  }
+   Wheel.setControl(new NeutralOut());
+   }
 }
