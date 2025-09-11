@@ -7,6 +7,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.Slot0Configs;
 
 
@@ -17,7 +18,7 @@ public class KrakenOut extends SubsystemBase {
 
 
  private TalonFX KrakenWrist;
- private MotionMagicVoltage angControl;
+ private MotionMagicVoltage angControl; //Not sure this works
 
  private MotionMagicVoltage motionMagicControl;
  private TalonFXConfiguration motionMagicConfig;
@@ -27,40 +28,44 @@ public class KrakenOut extends SubsystemBase {
     KrakenWrist = new TalonFX(OutConstants.KrakenWrist_ID);
      motionMagicConfig = new TalonFXConfiguration();
 
-     configureMotionMagic();
+     //configureMotionMagic();
      applyMotionMagicConfig();
 
-       TalonFXConfiguration KrakenWristConfig = new TalonFXConfiguration();
-       VelocityVoltage m_request = new VelocityVoltage(0).withSlot(0);
+    TalonFXConfiguration KrakenWristConfig = new TalonFXConfiguration();
+    VelocityVoltage m_request = new VelocityVoltage(0).withSlot(0);
 
 
-       Slot0Configs slot0 = new Slot0Configs();
+    Slot0Configs slot0 = KrakenWristConfig.Slot0;
        //Array []?
-       slot0.kP = 4.8; // A position error of 2.5 rotations results in 12 V output
-       slot0.kI = 0.0; // no output for integrated error
-       slot0.kD = 0.01; // A velocity error of 1 rps results in 0.1 V output
-       slot0.kS = 0.25; // Add 0.25 V output to overcome static friction
-       slot0.kV = 0; // A velocity target of 1 rps results in 0.12 V output
-       slot0.kA = 0; // An acceleration of 1 rps/s requires 0.01 V output
-       slot0.kG = 0; // A position error of 2.5 rotations results in 12 V output
-       motionMagicConfig.MotionMagic.MotionMagicAcceleration = OutConstants.MMAcceleration; 
-       motionMagicConfig.MotionMagic.MotionMagicCruiseVelocity = OutConstants.MMCruiseVelocity;
-      KrakenWrist.getConfigurator().apply(slot0);
-      KrakenWrist.setControl(m_request.withVelocity(8));
-     
-   }
+            slot0.kP = 4.8; // A position error of 2.5 rotations results in 12 V output
+            slot0.kI = 0.0; // no output for integrated error
+            slot0.kD = 0.01; // A velocity error of 1 rps results in 0.1 V output
+    motionMagicConfig.MotionMagic.MotionMagicAcceleration = OutConstants.MMAcceleration; 
+    motionMagicConfig.MotionMagic.MotionMagicCruiseVelocity = OutConstants.MMCruiseVelocity;//
+    KrakenWrist.getConfigurator().apply(slot0);
+    KrakenWrist.setControl(m_request.withVelocity(8));
+    StatusCode status = KrakenWrist.getConfigurator().apply(KrakenWristConfig);
+      //   Tries 5 times to apply; !true, prints error
+      for (int i = 0; i < 5; ++i) {
+                      if (status.isOK()) break;
+                     
+                      if (!status.isOK()) {
+                          System.out.println("Could not apply configs, error code: " + status.toString());}
+                      }
+                    }
+/*
+    private void configureMotionMagic() {
+    //Maldito perfil trapexoidal, por eso CEM esta en decadencia -Chong
+        motionMagicConfig.MotionMagic.MotionMagicAcceleration = OutConstants.MMAcceleration; 
+        motionMagicConfig.MotionMagic.MotionMagicCruiseVelocity = OutConstants.MMCruiseVelocity; 
+        motionMagicConfig.Slot0.kP = 0.5; 
+        motionMagicConfig.Slot0.kI = 0.0; 
+        motionMagicConfig.Slot0.kD = 0.0; 
+    }
+  */   
+   
 
-   private void configureMotionMagic() {
-   //Maldito perfil trapexoidal, por eso CEM esta en decadencia -Chong
-       motionMagicConfig.MotionMagic.MotionMagicAcceleration = 5000; 
-       motionMagicConfig.MotionMagic.MotionMagicCruiseVelocity = 10000; 
-       motionMagicConfig.Slot0.kP = 0.5; 
-       motionMagicConfig.Slot0.kI = 0.0; 
-       motionMagicConfig.Slot0.kD = 0.0; 
-       motionMagicConfig.Slot0.kV = 0.2; 
-   }
-
-   private void applyMotionMagicConfig() {
+   private void applyMotionMagicConfig() { //I think line 40-47 does this, but it would need to be a method
        KrakenWrist.getConfigurator().apply(motionMagicConfig);
        motionMagicControl = new MotionMagicVoltage(0.0)
            .withSlot(0)
@@ -84,7 +89,6 @@ public class KrakenOut extends SubsystemBase {
   public void useAngMotor() {
    KrakenWrist.setControl(angControl);//
  }
-
 
 
   public void setPosition(double rotations) {

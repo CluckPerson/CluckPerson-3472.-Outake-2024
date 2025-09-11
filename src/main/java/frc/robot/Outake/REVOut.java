@@ -1,12 +1,13 @@
 package frc.robot.Outake;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import frc.robot.Outake.OutConstants;
-// Ensure this is the correct package for VelocityGoal
 
 import lib.Forge.REV.SparkMax.ForgeSparkMax;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.CAN;
 
 
 public class REVOut extends SubsystemBase{
@@ -29,23 +30,16 @@ private void Burnflash(){
             25,
             false);
             //positionConversionFactor is worth looking into
-        /*
-            CANWrist.configure(
-            WristConfig,
-            com.revrobotics.spark.SparkBase.ResetMode.kResetSafeParameters,
-            PersistMode.kPersistParameters);      
-        */      
-        //      We have no safe Parameters, .flashConfiguration() only applies those
-        // 
     }
     private double getCurrentPosition(){ //Request Position
-        return CANWrist.getPosition() * 360;
+        return CANWrist.getAlternateEncoder().getPosition() * 360; 
+        //ForgeSparkMax's .getPosition().getRead(); might work because the config uses an AlternatEnc object
     }
 
     private void setPosition(double targetPosition) {
         double output = wristPID.calculate(getCurrentPosition(), targetPosition);
         output = Math.max(
-            OutConstants.Wrist_MinOutput, Math.min(OutConstants.Wrist_MaxOutput, output));//clamp
+            OutConstants.Wrist_MinOutput,     Math.min(OutConstants.Wrist_MaxOutput, output));//clamp
         CANWrist.set(output); 
 }
 
