@@ -18,13 +18,10 @@ public class KrakenOut extends SubsystemBase {
 
 
  private TalonFX KrakenWrist;
- private MotionMagicVoltage angControl; //Not sure this works
-
  private MotionMagicVoltage motionMagicControl;
  private TalonFXConfiguration motionMagicConfig;
 
-   public KrakenOut() {
-    MotionMagicVoltage angControl = new MotionMagicVoltage(0.0); 
+   public KrakenOut() { 
     KrakenWrist = new TalonFX(OutConstants.KrakenWrist_ID);
      motionMagicConfig = new TalonFXConfiguration();
 
@@ -40,8 +37,10 @@ public class KrakenOut extends SubsystemBase {
             slot0.kP = 4.8; // A position error of 2.5 rotations results in 12 V output
             slot0.kI = 0.0; // no output for integrated error
             slot0.kD = 0.01; // A velocity error of 1 rps results in 0.1 V output
+    
     motionMagicConfig.MotionMagic.MotionMagicAcceleration = OutConstants.MMAcceleration; 
     motionMagicConfig.MotionMagic.MotionMagicCruiseVelocity = OutConstants.MMCruiseVelocity;//
+    
     KrakenWrist.getConfigurator().apply(slot0);
     KrakenWrist.setControl(m_request.withVelocity(8));
     StatusCode status = KrakenWrist.getConfigurator().apply(KrakenWristConfig);
@@ -86,13 +85,9 @@ public class KrakenOut extends SubsystemBase {
        return Math.abs(currentPosition - targetPosition) <= tolerance;
    }
 
-  public void useAngMotor() {
-   KrakenWrist.setControl(angControl);//
- }
-
 
   public void setPosition(double rotations) {
-    KrakenWrist.setControl(angControl.withPosition(rotations));
+    KrakenWrist.setControl(motionMagicControl.withPosition(rotations));
   }
   public double getPosition() {
     return KrakenWrist.getPosition().getValueAsDouble();
